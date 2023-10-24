@@ -1,0 +1,175 @@
+<%- include('include/_header') %>
+
+<main id="site-main">
+    <div class="container">
+        <div class="box-nav d-flex justify-between">
+            <a id="backButton" class="hidden border-shadow" onclick="showAllData()"><span class="text-gradient2"><i class="fas fa-arrow-left"></i>  Back</span></a>
+            <a href="/" class="border-shadow showDataHide">
+                <span class="text-gradient">Player List <i class="fas fa-user"></i></span>
+            </a>
+            <a href="/leaderboard" class="border-shadow showDataHide">
+                <span class="text-gradient">Leaderboard <i class="fas fa-star"></i></span>
+            </a>
+            <a href="/start-game" class="border-shadow showDataHide">
+                <span class="text-gradient">New Match <i class="fas fa-futbol"></i></span>
+            </a>
+        </div>
+
+        <form class="d-flex">
+            <table class="table">
+                
+                    <thead>
+                        <tr id="head" class="hidden">
+                            <th>Name</th>
+                            <th>Final Score</th>
+                            <th>Date</th>
+                            <th>Starting</th>
+                            <th>Location</th>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < matchHistory.length; i++) { %>
+                            <% const dateStr = matchHistory[i].date.toString(); %>
+                            <% const formattedDate = `${dateStr.slice(0, 2)}/${dateStr.slice(2, 4)}/${dateStr.slice(4)}` %>
+                        <tr class="showDataHide table-row <%= matchHistory[i].win ? 'win' : 'loss' %>" onclick="showData(this)" id="<%= i %>" >
+                            
+                            <td>
+                                <%= matchHistory[i].team%><%= " - "%><%= formattedDate%><br><%= matchHistory[i].score %>
+                                <br>
+                                <a id="deletebut" class="delete" data-id=<%= matchHistory[i]._id%> >
+                                    <span class="text-gradient"><i class="fas fa-times"></i></span>
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr class="hidden" id="dataBody">
+                            <td><%= matchHistory[i].team%></td>
+                            <td><%= matchHistory[i].score%></td>
+                            <td><%= formattedDate %></td>
+                            <td><%= matchHistory[i].od%></td>
+                            <td><%= matchHistory[i].location%></td>
+                        </tr>
+                        <% }; %>
+                </tbody>
+            </table>
+            
+        </form>
+        
+    </div>
+</main>
+
+
+
+<script>
+    // Global variable to store the current index
+    let currentIndex;
+
+    //change button based on WL
+    function changeColour(row) {
+        if (row.classList.contains('win')) {
+            row.classList.remove('win');
+            row.classList.add('loss');
+        } else {
+            row.classList.remove('loss');
+            row.classList.add('win');
+        }
+    }
+
+    //seamless transitions
+    function showData(row) {
+        document.querySelectorAll('.hidden').forEach(element => {
+            element.classList.remove('hidden');
+            element.classList.add('jeb');
+        });
+
+        document.querySelectorAll('.showDataHide').forEach(element => {
+            element.classList.add('hidden');
+        });
+        console.log(row.id)
+        currentIndex = row.id;
+        let x=0;
+        document.querySelectorAll('#dataBody').forEach(element => {
+            if (x != currentIndex){
+                console.log(x + " " + currentIndex)
+                element.classList.add('hidden');
+                console.log(element)
+            }
+            x++;
+        })
+
+
+
+    }
+
+    function showAllData() {
+        document.querySelectorAll('#showDataHide').forEach(element => {
+            element.classList.remove('hidden');
+        });
+
+        document.querySelectorAll('.jeb').forEach(element => {
+            element.classList.add('hidden');
+        });
+        document.querySelectorAll('.showDataHide').forEach(element => {
+            element.classList.remove('hidden');
+        });
+
+    }
+
+    //escape key
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            showAllData();
+        }
+    });
+
+    function getCurrentIndex () {
+        return currentIndex;
+    }
+
+</script>
+
+<style>
+    #head {
+        background-color: #00417a;
+        color: #fff
+    }
+
+    .table-row.win {
+        background-color: rgb(197, 252, 197); 
+    }
+
+    .table-row.win:hover {
+        background-color: rgb(197, 252, 197); 
+        cursor: pointer;
+    }
+
+    .table-row.loss {
+        background-color: rgb(255, 188, 188);
+    }
+
+    .table-row.loss:hover {
+        background-color: rgb(255, 188, 188);
+        cursor: pointer;
+    }
+
+
+    #leaderboardButton {
+        margin-left: 10px;
+    }
+
+    .table td {
+        border: 0cm;
+    }
+    .table tr:hover {
+        background-color: #fff;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #backButton {
+        cursor: pointer;
+    }
+</style>
+
+<%- include('include/_footer') %>
